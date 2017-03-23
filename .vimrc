@@ -1,16 +1,58 @@
 set nocompatible              " be iMproved, required
+filetype off                  " required
 
-let mapleader = ","
+" set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
+call vundle#begin()
+" alternatively, pass a path where Vundle should install plugins
+"call vundle#begin('~/some/path/here')
+
+" let Vundle manage Vundle, required
+Plugin 'VundleVim/Vundle.vim'
+
+" The following are examples of different formats supported.
+" Keep Plugin commands between vundle#begin/end.
+" plugin on GitHub repo
+Plugin 'tpope/vim-fugitive'
+" plugin from http://vim-scripts.org/vim/scripts.html
+" Plugin 'L9'
+" Git plugin not hosted on GitHub
+Plugin 'git://git.wincent.com/command-t.git'
+" git repos on your local machine (i.e. when working on your own plugin)
+" Plugin 'file:///home/gmarik/path/to/plugin'
+" The sparkup vim script is in a subdirectory of this repo called vim.
+" Pass the path to set the runtimepath properly.
+Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
+" Install L9 and avoid a Naming conflict if you've already installed a
+" different version somewhere else.
+Plugin 'ascenator/L9', {'name': 'newL9'}
+" Emmet
+Plugin 'mattn/emmet-vim'
+" ShowMarks
+Plugin 'showmarks'
+
+" All of your Plugins must be added before the following line
+call vundle#end()            " required
+filetype plugin indent on    " required
+" To ignore plugin indent changes, instead use:
+"filetype plugin on
+"
+" Brief help
+" :PluginList       - lists configured plugins
+" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
+" :PluginSearch foo - searches for foo; append `!` to refresh local cache
+" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
+"
+" see :h vundle for more details or wiki for FAQ
+" Put your non-Plugin stuff after this line
+
+
+let mapleader = ","         " Default key leader 
 
 " enable syntax and plugins (for netrw)
 syntax enable
-filetype on
-filetype plugin on
-filetype indent on                  
 
 set hlsearch		" surligne les résultats de recherche
-
-set shiftwidth=2	" how many columns text is indented with the reindent operations (<< and >>)
 
 set autoindent		" retour à la ligne intelligent, indentation automatique
 
@@ -36,9 +78,24 @@ set incsearch       " do incremental searching
 
 set timeout timeoutlen=200 ttimeoutlen=200
 
-" Theme PaperColor
+"---------------Visuals---------------"
 set background=light
 colorscheme summerfruit256
+
+" afficher/masquer le surlignement des résultats d'une recherche avec ctrl+n
+" en mode normal
+function! ToggleHLSearch()
+	if &hls
+		set nohls
+	else
+		set hls
+	endif
+endfunction
+
+"---------------Mappings---------------"
+
+" Raccourci pour éditer le fichier .vimrc
+nmap ,ev :e $MYVIMRC<CR>
 
 " Activer ou désactiver le mode Paste avec <F2> pour coller du texte sans formatage
 nnoremap <F2> :set invpaste paste?<CR>
@@ -47,17 +104,6 @@ set showmode
 
 " Coller avec le registre "0
 nnoremap <F3> "0p
-
-" afficher/masquer le surlignement des résultats d'une recherche avec ctrl+n
-" en mode normal
-function ToggleHLSearch()
-	if &hls
-		set nohls
-	else
-		set hls
-	endif
-endfunction
-
 
 " ctrl + n en mode normal pour permuter le surlignage sur les termes d'une recherche
 nmap <silent> <C-n> <Esc>:call ToggleHLSearch()<CR>
@@ -150,19 +196,29 @@ nnoremap <silent> <A-Right> :execute 'silent! tabmove ' . (tabpagenr()+1)<CR>
 nnoremap gr :tabprevious<CR>
 
 " Abbréviations
-
-:iab if if ()<CR>{<CR><CR>}
-:iab else <CR>{<CR><CR>}<Up><Up><Up><Up>
-:iab for for (i = 0; i < ; i++)<CR>{<CR><CR>}
-:iab switch switch()<cr>{<CR>case : <CR>break;<CR><CR>case : <CR>break;<CR>}
-:iab $(' $('').('', function()<CR>{<CR><CR>});
-:iab function function ()<CR>{<CR><CR>}<C-o>3k<C-o>f(
-:iab $(f $(function(){<CR><CR>});<C-o>k
+ 
+:iab bonjour hello!!!
+:iab if! if ()<CR>{<CR><CR>}
+:iab else! else<CR>{<CR><CR>}<C-o>2k
+:iab for! for (i = 0; i < ; i++)<CR>{<CR><CR>}
+:iab switch! switch()<cr>{<CR>case : <CR>break;<CR><CR>case : <CR>break;<CR>}
+:iab $('! $('').('', function()<CR>{<CR><CR>});
+:iab function! function ()<CR>{<CR><CR>}<C-o>3k<C-o>f(
+:iab $(f! $(function(){<CR><CR>});<C-o>k
 :ab #b /*********************************************
 :ab #e *********************************************/
 :iab ( ()<C-h>
 :iab { {}<C-h>
 :iab <!-- <!--<Space><Space>--><Left><Left><Left><Left><Left>
 
-:autocmd VimEnter * DoShowMarks!		" exécute la commande DoShowMarks! pour afficher la barre des marques au lancement d'un fichier, elle s'affichera dès la 1ère marque posée
+"---------------Auto-Commands---------------"
+
+" Automatically source the Vimrc filave
+augroup autosourcing
+			autocmd!
+			autocmd BufWritePost .vimrc source %
+augroup end
+
+:autocmd VimEnter * ShowMarksOn		" exécute la commande DoShowMarks! pour afficher la barre des marques au lancement d'un fichier, elle s'affichera dès la 1ère marque posée
+
 
