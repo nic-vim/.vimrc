@@ -142,7 +142,7 @@ inoremap <leader>( <C-o>b(<C-o>e<Right>)
 
 " Raccourcis touche <leader> ,
 " Enregistrement avec ;
-nnoremap <leader>; <Esc>:w<CR>
+nnoremap <leader>. <Esc>:w<CR>
 " complétion avec n
 inoremap <leader>n <C-n>
 " coller le registre "* avec p
@@ -197,7 +197,6 @@ nnoremap gr :tabprevious<CR>
 
 " Abbréviations
  
-:iab bonjour hello!!!
 :iab if! if ()<CR>{<CR><CR>}
 :iab else! else<CR>{<CR><CR>}<C-o>2k
 :iab for! for (i = 0; i < ; i++)<CR>{<CR><CR>}
