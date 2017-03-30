@@ -30,6 +30,8 @@ Plugin 'ascenator/L9', {'name': 'newL9'}
 Plugin 'mattn/emmet-vim'
 " ShowMarks
 Plugin 'showmarks'
+" NERDTree
+Plugin 'scrooloose/nerdtree'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -78,9 +80,15 @@ set incsearch       " do incremental searching
 
 set timeout timeoutlen=200 ttimeoutlen=200
 
+set complete=.,w,b,u,t,i,kspell    " options de l'auto completion
+
 "---------------Visuals---------------"
+
+" Theme
 set background=light
-colorscheme summerfruit256
+colorscheme summerfruit
+
+"---------------Search---------------"
 
 " afficher/masquer le surlignement des résultats d'une recherche avec ctrl+n
 " en mode normal
@@ -92,10 +100,22 @@ function! ToggleHLSearch()
 	endif
 endfunction
 
-"---------------Mappings---------------"
+"---------------Split Management---------------"
 
-" Raccourci pour éditer le fichier .vimrc
-nmap ,ev :e $MYVIMRC<CR>
+set splitbelow     " split par defaut au dessous
+set splitright     " split par defaut a droite
+
+nnoremap <Down> <C-w>j
+nnoremap <Up> <C-w>k
+nnoremap <Left> <C-w>h
+nnoremap <Right> <C-w>l
+
+"nnoremap <C-j> <C-w>j
+"nnoremap <C-k> <C-w>k
+"nnoremap <C-h> <C-w>h
+"nnoremap <C-l> <C-w>l
+
+"---------------Mappings---------------"
 
 " Activer ou désactiver le mode Paste avec <F2> pour coller du texte sans formatage
 nnoremap <F2> :set invpaste paste?<CR>
@@ -123,15 +143,15 @@ imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
 :imap jk <ESC>
 :vmap jk <ESC>
 
-" indentation automatique de l'ensemble du document
-nmap <leader>b ggv<S-g>=''
-imap <leader>b <Esc>ggv<S-g>=''i
-
-" Déplacement window
-nnoremap <C-j> <C-w>j
-nnoremap <C-k> <C-w>k
-nnoremap <C-h> <C-w>h
-nnoremap <C-l> <C-w>l
+" Redimension window
+nnoremap <F5> :resize -1<CR>
+nnoremap <F6> :resize +1<CR>
+nnoremap <S-F5> :vertical resize -1<CR>
+nnoremap <S-F6> :vertical resize +1<CR>
+inoremap <F5> <C-o>:resize -1<CR>
+inoremap <F6> <C-o>:resize +1<CR>
+inoremap <S-F5> <C-o>:vertical resize -1<CR>
+inoremap <S-F6> <C-o>:vertical resize +1<CR>
 
 " Entourer un mot de simples quotes, doubles quotes, chevrons, crochets, accolades
 nnoremap <leader>' bi'<Esc>ea'<Esc>
@@ -148,6 +168,13 @@ inoremap <leader>n <C-n>
 " coller le registre "* avec p
 inoremap <leader>p <C-o>"*p
 nnoremap <leader>p "*p
+" indentation automatique de l'ensemble du document
+nmap <leader>b ggv<S-g>=''
+imap <leader>b <Esc>ggv<S-g>=''i
+" Raccourci pour éditer le fichier .vimrc
+nmap ,ev :tabe $MYVIMRC<CR>
+
+nnoremap <leader>ku :echo 'test'<CR>
 
 " Raccourcis déplacements
 inoremap <C-k> <Up>
@@ -163,12 +190,9 @@ inoremap SS <Esc>S
 inoremap DD <Esc>dd
 inoremap UU <Esc>ui
 
-" Déplacement par n° de ligne
-nnoremap § G
-vnoremap § G
-
 " space
-nnoremap <Space> i<Space><Esc><Right>
+nnoremap <Space> :NERDTreeToggle<CR>
+
 " backspace
 nnoremap <BS> i<BS><Right><Esc>
 nmap <C-_> <BS>
@@ -195,7 +219,26 @@ nnoremap <silent> <A-Left> :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
 nnoremap <silent> <A-Right> :execute 'silent! tabmove ' . (tabpagenr()+1)<CR>
 nnoremap gr :tabprevious<CR>
 
-" Abbréviations
+" Deplacement du curseur au numero de ligne
+nnoremap <F4> G
+
+"---------------Auto-Commands---------------"
+
+" Open a NERDTree automatically when vim starts up if no files were specified
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif
+
+" Close vim if the  only window  left open is a NERDTree
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+" Automatically source the Vimrc filave
+augroup autosourcing
+			autocmd!
+			autocmd BufWritePost .vimrc source %
+augroup end
+
+
+"---------------Abreviations---------------"
  
 :iab if! if ()<CR>{<CR><CR>}
 :iab else! else<CR>{<CR><CR>}<C-o>2k
@@ -209,15 +252,4 @@ nnoremap gr :tabprevious<CR>
 :iab ( ()<C-h>
 :iab { {}<C-h>
 :iab <!-- <!--<Space><Space>--><Left><Left><Left><Left><Left>
-
-"---------------Auto-Commands---------------"
-
-" Automatically source the Vimrc filave
-augroup autosourcing
-			autocmd!
-			autocmd BufWritePost .vimrc source %
-augroup end
-
-:autocmd VimEnter * ShowMarksOn		" exécute la commande DoShowMarks! pour afficher la barre des marques au lancement d'un fichier, elle s'affichera dès la 1ère marque posée
-
 
