@@ -23,14 +23,18 @@ Plugin 'rstacruz/sparkup', {'rtp': 'vim/'}
 Plugin 'ascenator/L9', {'name': 'newL9'}
 " Emmet
 Plugin 'mattn/emmet-vim'
-" ShowMarks
-Plugin 'showmarks'
+" Tpope Vim-commentary
+Plugin 'tpope/vim-commentary'
 " NERDTree
 Plugin 'scrooloose/nerdtree'
 " CtrlP
 Plugin 'ctrlpvim/ctrlp.vim'
 " Vim Vinegar
 Plugin 'tpope/vim-vinegar'
+" Compiles your less files on the fly
+Bundle 'vitalk/vim-lesscss'
+" Vim Bookmarks
+Plugin 'MattesGroeger/vim-bookmarks'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -87,22 +91,9 @@ set complete=.,w,b,u,t,i,kspell    " options de l'auto completion
 set background=light
 colorscheme desert
 
-"---------------Search---------------"
-
-" afficher/masquer le surlignement des résultats d'une recherche avec ctrl+n
-" en mode normal
-"function! ToggleHLSearch()
-"	if &hls
-"		set nohls
-"	else
-"		set hls
-"	endif
-"endfunction
-
-" F3 pour activer/désactiver le surlignage des recherches
-noremap <Esc>OR :set hlsearch! hlsearch?<CR>
 
 "---------------Split Management---------------"
+"——————————————————————————————————————————————"
 
 set splitbelow     " split par defaut au dessous
 set splitright     " split par defaut a droite
@@ -112,7 +103,9 @@ nnoremap <S-Up> <C-w>k
 nnoremap <S-Left> <C-w>h
 nnoremap <S-Right> <C-w>l
 
+
 "---------------Plugins---------------"
+"—————————————————————————————————————"
 
 "/
 "/ CtrlP
@@ -127,7 +120,19 @@ let g:ctrlp_custom_ignore = 'node_modules\|git'
 "/
 let NERDTreeHijackNetrw = 0
 
+"/
+"/ Lesscss
+"/
+" less to css executable (full path or simple executable)
+let g:lesscss_cmd = '$(which lessc)'
+" save css files to separate css folder (relative to original less location)
+let g:lesscss_save_to = '../css/'
+" disable plugin at startup
+let g:lesscss_on = 0
+
+
 "---------------Mappings Divers---------------"
+"—————————————————————————————————————————————"
 
 " {W} -> [É]
 " ——————————
@@ -173,6 +178,7 @@ noremap L C
 " {J} = « Remplace »           (j = un caractère slt, J = reste en « Remplace »)
 noremap j r
 noremap J R
+inoremap <C-j> <C-r>
 " {K} = « Substitue »          (k = caractère, K = ligne)
 noremap k s
 noremap K S
@@ -196,9 +202,9 @@ noremap g" g0
  
 " <> en direct
 " ————————————
-noremap « <
-noremap » >
-inoremap « <
+"noremap « <
+"noremap » >
+"inoremap « <
 
 noremap wd <C-w>c
 noremap wo <C-w>s
@@ -208,70 +214,66 @@ noremap w<CR> :vsplit<CR>
 
 " Chiffres en accès direct
 " ————————————————————————
-noremap " 1
-noremap 1 "
-noremap « 2
-noremap 2 <
-noremap » 3
-noremap 3 >
-noremap ( 4
-noremap 4 (
-noremap ) 5
-noremap 5 )
-noremap @ 6
-noremap 6 @
-noremap + 7
-noremap 7 +
-noremap - 8
-noremap 8 -
-noremap / 9
-noremap 9 /
-noremap * 0
-noremap 0 *
-noremap! " 1
-noremap! 1 "
-noremap! « 2
-noremap! 2 <
-noremap! » 3
-noremap! 3 >
-noremap! ( 4
-noremap! 4 (
-noremap! ) 5
-noremap! 5 )
-noremap! @ 6
-noremap! 6 @
-noremap! + 7
-noremap! 7 +
-noremap! - 8
-noremap! 8 -
-noremap! / 9
-noremap! 9 /
-noremap! * 0
-noremap! 0 *
+"noremap " 1
+"noremap 1 "
+"noremap « 2
+"noremap 2 « 
+"noremap » 3
+"noremap 3 »
+"noremap ( 4
+"noremap 4 (
+"noremap ) 5
+"noremap 5 )
+"noremap @ 6
+"noremap 6 @
+"noremap + 7
+"noremap 7 +
+"noremap - 8
+"noremap 8 -
+"noremap / 9
+"noremap 9 /
+"noremap * 0
+"noremap 0 *
+"noremap! " 1
+"noremap! 1 "
+"noremap! « 2
+"noremap! 2 <
+"noremap! » 3
+"noremap! 3 >
+"noremap! ( 4
+"noremap! 4 (
+"noremap! ) 5
+"noremap! 5 )
+"noremap! @ 6
+"noremap! 6 @
+"noremap! + 7
+"noremap! 7 +
+"noremap! - 8
+"noremap! 8 -
+"noremap! / 9
+"noremap! 9 /
+"noremap! * 0
+"noremap! 0 *
 
+" Rangée de touches fonctions
+" ———————————————————————————
+"
 " Activer ou désactiver le mode Paste avec <F2> pour coller du texte sans formatage
 nnoremap <F2> :set invpaste paste?<CR>
 set pastetoggle=<F2>
 set showmode
 
-" Coller avec le registre "0
+" Coller le registre "*
 nnoremap <F3> "0p
+set <S-F3>=[1;2R
+nnoremap <S-F3> "*p
 
-" mapping de tous les caractères de a à z avec Alt
-let c='a'
-while c <= 'z'
-	exec "map \e".c." <M-".c.">"
-	exec "map! \e".c." <M-".c.">"
-	let c = nr2char(1+char2nr(c))
-endw
+" F3 pour activer/désactiver le surlignage des recherches
+"noremap <Esc>OR :set hlsearch! hlsearch?<CR>
+noremap <C-k> :set hlsearch! hlsearch?<CR>
 
-" mapping emmet
-let g:user_emmet_expandabbr_key='<Tab>'
-imap <expr> <tab> emmet#expandAbbrIntelligent("\<tab>")
-
-" Quitter le mode insertion
-:imap ts <ESC>
-:vmap ts <ESC>
+" Deplacement du curseur au numero de ligne
+nnoremap <F4> G
 
 " Redimension window
 nnoremap <F5> :resize -1<CR>
@@ -283,9 +285,36 @@ inoremap <F6> <C-o>:resize +1<CR>
 inoremap <S-F5> <C-o>:vertical resize -1<CR>
 inoremap <S-F6> <C-o>:vertical resize +1<CR>
 
+" Ouvrir le buffer numéro n
+nnoremap <F7> :buffers<CR>:buffer<Space>
+
+" Insertion d'une ligne vide
+nnoremap <F8> O<Esc>
+nnoremap <F9> o<Esc>
+
+" ———————————————————————————
+
+" mapping de tous les caractères de a à z avec Alt
+let c='a'
+while c <= 'z'
+	exec "map \e".c." <M-".c.">"
+	exec "map! \e".c." <M-".c.">"
+	let c = nr2char(1+char2nr(c))
+endw
+
+" mapping emmet
+let g:user_emmet_expandabbr_key='<leader>e'
+imap <expr> <leader>e emmet#expandAbbrIntelligent("\<leader>e")
+
+" Quitter le mode insertion
+:imap td <ESC>
+:vmap td <ESC>
+
 " Raccourcis touche <leader> ,
-" Enregistrement avec ;
-nnoremap <leader>e <Esc>:w<CR>
+" ————————————————————————————
+"
+" Enregistrement
+nnoremap <leader>w <Esc>:w<CR>
 " complétion avec n
 inoremap <leader>n <C-n>
 " coller le registre "* avec p
@@ -294,35 +323,31 @@ nnoremap <leader>p "*p
 " indentation automatique de l'ensemble du document
 nmap <leader>b ggv<S-g>=''
 imap <leader>b <Esc>ggv<S-g>=''i
-" Raccourci pour éditer le fichier .vimrc
+" Éditer le fichier .vimrc
 nmap <leader>ov :tabe $MYVIMRC<CR>
+" Buffer suivant
+nnoremap <leader><Tab> :bnext<CR>
 
+" Raccourcis déplacements en mode insertion
+" —————————————————————————————————————————
 
-" Raccourcis déplacements
-imap <C-d> <C-o>s
-imap <C-t> <C-o>t
-imap <C-c> <C-o>c
-imap <C-r> <C-o>r
+imap <A-s> <Up>
+imap <A-t> <Down>
+imap <A-c> <Left>
+imap <A-r> <Right>
 
 imap II <Esc>I
 imap AA <Esc>A
 imap OO <Esc>O
 imap LL <Esc>L
-imap SS <Esc>S
 imap DD <Esc>dd
 imap UU <Esc>ui
 
-" space
-nnoremap <Space> :NERDTreeToggle<CR>
+" Backspace avec '
+inoremap <Esc><Char-39> <BS>
 
-" backspace
-nnoremap <BS> i<BS><Right><Esc>
-nmap <C-l> <BS>
-inoremap <C-l> <BS>
-" cariage return
-nnoremap <CR> i<CR><Esc>
-nnoremap <F8> O<Esc>
-nnoremap <F9> o<Esc>
+" Retour chariot
+inoremap <A-v> <CR>
 
 " Déplacement de lignes ou de bloc
 noremap <A-Down> :m .+1<CR>==
@@ -337,14 +362,12 @@ nnoremap <silent> <A-Left> :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
 nnoremap <silent> <A-Right> :execute 'silent! tabmove ' . (tabpagenr()+1)<CR>
 nnoremap gr :tabprevious<CR>
 
-" Deplacement du curseur au numero de ligne
-nnoremap <F4> G
-
 " CtrlP
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 
 " ALT GR
+" ——————
 " Z 
 noremap ə @
 noremap! ə @
@@ -362,28 +385,81 @@ noremap ß !
 noremap! ß !
 
 " ALT
+" ———
 " ê 
 noremap <Esc>ê (
 noremap! <Esc>ê (
-" à
-noremap <Esc>à )
-noremap! <Esc>à )
+" cariage return en mode insertion
+inoremap <Esc>à <C-o>o 
 " a
 noremap <Esc>a [
 noremap! <Esc>a [
 " u
 noremap <Esc>u ]
 noremap! <Esc>u ]
-" p
-noremap <Esc>p :
-noremap! <Esc>p :
+" é
+noremap <Esc>é :
+noremap! <Esc>é :
 
 " SHIFT
+" —————
+
+" Espace
+" ——————
+"
+" Espace
+nnoremap <Char-32> <C-d>
+" Shift
+nnoremap <Char-160> <C-u>
+" y
+nnoremap <Space>y "+yy
+" o
+nnoremap <Space>o :tabnew<CR>:Explore<CR>
+" n
+nnoremap <Space>n :NERDTreeToggle<CR>
         
 " Divers
 cmap ç !
 inoremap <C-y> <C-o>o
 inoremap <A-y> <C-o>
+nnoremap <Char-8> gg
+
+" Copier/Coller amélioré en allant directement à la fin du bloc copié/collé
+"vnoremap <silent> y y`]
+vnoremap <silent> p p`]
+nnoremap <silent> p p`]
+
+" Restoring position when run a command in multiple buffers
+"——————————————————————————————————————————————————————————"
+
+" Like bufdo but restore the current buffer.
+function! BufDo(command)
+  let currBuff=bufnr("%")
+  execute 'bufdo ' . a:command
+  execute 'buffer ' . currBuff
+endfunction
+com! -nargs=+ -complete=command Bufdo call BufDo(<q-args>)
+
+" Like tabdo but restore the current tab.
+function! TabDo(command)
+  let currTab=tabpagenr()
+  execute 'tabdo ' . a:command
+  execute 'tabn ' . currTab
+endfunction
+com! -nargs=+ -complete=command Tabdo call TabDo(<q-args>)
+
+" Like windo but restore the current window.
+function! WinDo(command)
+  let currwin=winnr()
+  let curaltwin=winnr('#')
+  execute 'windo ' . a:command
+  " restore previous/alt window
+  execute curaltwin . 'wincmd w'
+  " restore current window
+  execute currwin . 'wincmd w'
+endfunction
+com! -nargs=+ -complete=command Windo call WinDo(<q-args>)
+
 
 "---------------Auto-Commands---------------"
 
@@ -401,7 +477,15 @@ augroup autosourcing
 augroup end
 
 
-"---------------Abreviations---------------"
+"---------------Abbreviations---------------"
+
+" Fonction pour supprimer l'espace ajouté à la fin
+func! Eatchar(pat)
+	let c = nr2char(getchar(0))
+	return (c =~ a:pat) ? '' : c
+endfunc
+
+:iabbr <silent> if if 45<Left><C-R>=Eatchar4'\s'5<CR>
 
 :iab cl! console.log45;
 :iab if! if ()<CR>{<CR><CR>}
@@ -413,15 +497,8 @@ augroup end
 :iab $(f! $(function(){<CR><CR>});<C-o>k
 :ab #b /*********************************************
 :ab #e *********************************************/
-":iab ( ()<C-h>
-":iab { {}<C-h>
-:iab <!-- <!--<Space><Space>--><Left><Left><Left><Left><Left>
+:iab () 45<C-o>h<C-o>h
+":iab { {}
 " jQuery
 :iab jqon! $4''5.4'', function45{<CR><CR>}5;
 :iab jqc! $4''5.css4'', ''5;
-
-"if !exists("g:customized_netrw")
-"  let g:customized_netrw = 1
-"  execute "nnoremap <buffer> o " . maparg("<CR>", "n")
-"  nnoremap <buffer> <CR> :
-"endif
