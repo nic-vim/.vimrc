@@ -47,6 +47,13 @@ Plugin 'easymotion/vim-easymotion'
 " /Incsearch 
 Plugin 'haya14busa/incsearch.vim'
 Plugin 'haya14busa/incsearch-easymotion.vim'
+" Conoline
+Plugin 'miyakogi/conoline.vim'
+" Ultisnips 
+" Track the engine. 
+Plugin 'SirVer/ultisnips' 
+" Snippets are separated from the engine. Add this if 4you want them: 
+Plugin 'honza/vim-snippets' 
 
 
 " All of your Plugins must be added before the following line
@@ -82,7 +89,7 @@ set number
 " affiche les commandes incomplètes
 set showcmd            
 
-set tabstop=2 softtabstop=2 shiftwidth=2 noexpandtab
+set tabstop=2 softtabstop=2 shiftwidth=2 expandtab
 
 " allow backspacing over everything in insert mode
 set backspace=indent,eol,start
@@ -113,13 +120,12 @@ set wildmenu
 "SWAGG
 "set relativenumber                           " setting line numbers
 "set colorcolumn=81                           " line to show 81 character mark
-set cursorline                               " shows the horizontal cursor line
+"set cursorline                               " shows the horizontal cursor line
 
 
 "---------------Visuals---------------"
 "—————————————————————————————————————"
 
-" Theme
 set background=light
 colorscheme peachpuff 
 set nowrap
@@ -190,6 +196,12 @@ let g:indentLine_color_term = 239
 "/
 set laststatus=2
 
+"/
+"/ Conoline
+"/
+let g:conoline_auto_enable = 1
+
+
 "---------------Mappings Divers---------------"
 "—————————————————————————————————————————————"
 
@@ -210,19 +222,21 @@ onoremap iÉ iW
 noremap w <C-w>
 noremap W <C-w><C-w>
 
-" [HJKL] -> {CTSR}
+" [HJKL] -> {TQSR}
 " ————————————————
-" {cr} = « gauche / droite »
-noremap c h
+" {tr} = « gauche / droite »
+noremap t h
 noremap r l
 " {ts} = « haut / bas »
-noremap t j
-noremap s k
+nnoremap q gj
+vnoremap q gj
+nnoremap s gk
+vnoremap s gk
 " {CR} = « haut / bas de l'écran »
-noremap C H
+noremap T H
 noremap R L
 " {TS} = « joindre / aide »
-noremap T J
+noremap Q J
 noremap S K
 " Corollaire : repli suivant / précédent
 noremap zs zj
@@ -261,9 +275,8 @@ noremap gÉ :exe "silent! tablast"<CR>
 " optionnel : {g"} pour aller au début de la ligne écran
 noremap g" g0
 
-"noremap wd <C-w>c
-"noremap wo <C-w>s
-"noremap wp <C-w>o
+" Redéfinition de la lettre q
+nnoremap ç q
 
 
 " Chiffres en accès direct
@@ -375,16 +388,14 @@ while c <= 'z'
 endw
 
 " Quitter le mode insertion
-:imap td <ESC>
-:vmap td <ESC>
+:imap qs <ESC>
+:vmap qs <ESC>
 
 " Raccourcis touche <leader> ,
 " ————————————————————————————
 "
 " Enregistrement
 nnoremap <leader>w <Esc>:wa<CR>
-" complétion avec n
-inoremap <leader>n <C-n>
 " coller le registre "* avec p
 inoremap <leader>p <C-o>"*p
 nnoremap <leader>p "*p
@@ -399,19 +410,20 @@ nnoremap <leader><Tab> :bnext<CR>
 noremap <leader>h :set hlsearch! hlsearch?<CR>
 " Ouvrir un nouvel onglet
 nmap <leader>t <Esc>:tabnew<CR>
-
+" Afficher le nombre d'occurence d'une recherche
+map ,* *<C-o>:%s///gn<CR>n
 
 " Raccourcis déplacements en mode insertion
 " —————————————————————————————————————————
 
 imap <A-s> <Up>
-imap <A-t> <Down>
-imap <A-c> <Left>
+imap <A-q> <Down>
+imap <A-t> <Left>
 imap <A-r> <Right>
 
 cmap <A-s> <Up>
-cmap <A-t> <Down>
-cmap <A-c> <Left>
+cmap <A-q> <Down>
+cmap <A-t> <Left>
 cmap <A-r> <Right>
 
 imap II <Esc>I
@@ -422,10 +434,35 @@ imap DD <Esc>dd
 imap UU <Esc>ui
 
 " Backspace avec '
-inoremap <Esc><Char-39> <BS>
-cnoremap <Esc><Char-39> <BS>
+function! BS_key(...)
+
+  let column = col(".")
+  "call Decho ("colum: " . column)
+
+  execute "normal i\<BS>\<ESC>"
+
+    if column == 1
+      let column2 = col (".")
+      if column2 > 1
+				echo column
+          execute "normal r"
+      endif
+    else
+      if column > 1
+				echo column
+        execute "normal r" 
+      endif
+    endif
+
+endfunction       
+
+nnoremap <BS> :call BS_key()<CR>
+nmap <Esc><Char-39> <BS>
+imap <Esc><Char-39> <BS>
+cmap <Esc><Char-39> <BS>
 
 " Retour chariot
+nnoremap <A-v> i<CR><Esc>
 inoremap <A-v> <CR>
 cnoremap <A-v> <CR>
 
@@ -513,7 +550,7 @@ inoremap <Esc>w ╗
 inoremap <Esc>n ╝
 inoremap <Esc>m ╚
 inoremap <Esc>ç ╠
-inoremap <Esc>q ╣
+" inoremap <Esc>q ╣
 inoremap <Esc>g ╦
 inoremap <Esc>h ╩
 inoremap <Esc>f ╬
@@ -521,14 +558,20 @@ inoremap <Esc>f ╬
 " Autocompletion
 inoremap èèn <C-x><C-n>
 inoremap èèf <C-x><C-f>
+inoremap <leader>f <C-x><C-f>
+inoremap <leader>n <C-x><C-n>
+inoremap <leader>o <C-x><C-o>
 
 " Divers
 cmap ç !
 inoremap éé <C-o>
+
 nnoremap èo A<CR><Esc>
 inoremap èo <C-o>$<CR>
-inoremap oè <Esc>O
+
 nnoremap <leader>fp :put =expand('%:p')<CR>
+nnoremap g, g;
+
 
 " Mapping Plugins
 " ———————————————
@@ -557,6 +600,15 @@ let g:NumberToggleTrigger="<F10>"
 
 " EasyMotion
 nmap k <Plug>(easymotion-overwin-f2)
+
+" Ctags
+nnoremap )è <C-]>
+nnoremap è) <C-o>
+
+" UltiSnips
+let g:UltiSnipsExpandTrigger="<leader>u" 
+let g:UltiSnipsJumpForwardTrigger="<c-b>" 
+let g:UltiSnipsJumpBackwardTrigger="<c-z>" 
 
 
 " Restoring position when run a command in multiple buffers
@@ -606,7 +658,10 @@ augroup autosourcing
 	autocmd BufWritePost .vimrc source %
 augroup end
 
-autocmd VimEnter * :execute "normal i\<F8>\<Esc>"
+autocmd VimEnter * :execute "normal i\<F8>\<Esc><Esc>\x"
+
+autocmd BufNewFile,BufRead *.vue set filetype=html
+
 
 	"---------------Abbreviations---------------"
 
