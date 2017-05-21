@@ -54,6 +54,8 @@ Plugin 'miyakogi/conoline.vim'
 Plugin 'SirVer/ultisnips' 
 " Snippets are separated from the engine. Add this if 4you want them: 
 Plugin 'honza/vim-snippets' 
+" Vim Arpeggio
+Plugin 'kana/vim-arpeggio'
 
 
 " All of your Plugins must be added before the following line
@@ -199,7 +201,7 @@ set laststatus=2
 "/
 "/ Conoline
 "/
-let g:conoline_auto_enable = 1
+let g:conoline_auto_enable = 0
 
 
 "---------------Mappings Divers---------------"
@@ -610,6 +612,11 @@ let g:UltiSnipsExpandTrigger="<leader>u"
 let g:UltiSnipsJumpForwardTrigger="<c-b>" 
 let g:UltiSnipsJumpBackwardTrigger="<c-z>" 
 
+"Vim Arpeggio
+call arpeggio#map('i', '', 0, 'bt', '<button class="btn btn-default" type="submit">Button</button>')
+call arpeggio#map('i', '', 0, 'jk', '<Esc>')
+call arpeggio#map('i', '', 0, 'jk', '<Esc>')
+call arpeggio#map('i', '', 0, 'jk', '<Esc>')
 
 " Restoring position when run a command in multiple buffers
 "——————————————————————————————————————————————————————————
@@ -658,7 +665,7 @@ augroup autosourcing
 	autocmd BufWritePost .vimrc source %
 augroup end
 
-autocmd VimEnter * :execute "normal i\<F8>\<Esc><Esc>\x"
+"autocmd VimEnter * :execute "normal i\<F8>\<Esc><Esc>\x"
 
 autocmd BufNewFile,BufRead *.vue set filetype=html
 
