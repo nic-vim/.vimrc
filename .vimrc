@@ -1,6 +1,7 @@
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
+" Vundle {{{
 " set the runtime path to include Vundle and initialize
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -56,7 +57,10 @@ Plugin 'SirVer/ultisnips'
 Plugin 'honza/vim-snippets' 
 " Vim Arpeggio
 Plugin 'kana/vim-arpeggio'
-
+" Matchem
+"Plugin 'ervandew/matchem'
+" DelimitMate
+Plugin 'Raimondi/delimitMate'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -73,6 +77,9 @@ filetype plugin indent on    " required
 " see :h vundle for more details or wiki for FAQ
 " Put your non-Plugin stuff after this line
 
+" }}}
+
+" Set Option {{{
 
 let mapleader = ","         " Default key leader 
 
@@ -203,6 +210,9 @@ set laststatus=2
 "/
 let g:conoline_auto_enable = 0
 
+" }}}
+
+" Mapping {{{
 
 "---------------Mappings Divers---------------"
 "—————————————————————————————————————————————"
@@ -393,7 +403,7 @@ endw
 :imap qs <ESC>
 :vmap qs <ESC>
 
-" Raccourcis touche <leader> ,
+" Raccourcis touche <leader> , {{{
 " ————————————————————————————
 "
 " Enregistrement
@@ -414,8 +424,14 @@ noremap <leader>h :set hlsearch! hlsearch?<CR>
 nmap <leader>t <Esc>:tabnew<CR>
 " Afficher le nombre d'occurence d'une recherche
 map ,* *<C-o>:%s///gn<CR>n
+nnoremap <leader>. :cd %:h<cr>
+nnoremap <leader>d "_d
+nnoremap <leader>q :q!<cr>
+nnoremap <leader>z :wq!<cr>
+nnoremap <leader>za :wqa!<cr>
+" }}}
 
-" Raccourcis déplacements en mode insertion
+" Raccourcis déplacements en mode insertion {{{
 " —————————————————————————————————————————
 
 imap <A-s> <Up>
@@ -435,7 +451,9 @@ imap LL <Esc>L
 imap DD <Esc>dd
 imap UU <Esc>ui
 
-" Backspace avec '
+" }}}
+
+" Backspace avec Alt ' et Del avec Alt k
 function! BS_key(...)
 
   let column = col(".")
@@ -462,6 +480,8 @@ nnoremap <BS> :call BS_key()<CR>
 nmap <Esc><Char-39> <BS>
 imap <Esc><Char-39> <BS>
 cmap <Esc><Char-39> <BS>
+inoremap <A-k> <Del>
+cnoremap <A-k> <Del>
 
 " Retour chariot
 nnoremap <A-v> i<CR><Esc>
@@ -574,8 +594,12 @@ inoremap èo <C-o>$<CR>
 nnoremap <leader>fp :put =expand('%:p')<CR>
 nnoremap g, g;
 
+inoremap j= <C-o>==
 
-" Mapping Plugins
+inoremap x<space> <C-o>$<space>
+
+
+" Mapping Plugins {{
 " ———————————————
 
 " Vim Bookmarks
@@ -594,8 +618,9 @@ let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 
 " emmet
-let g:user_emmet_expandabbr_key='<leader>e'
-imap <expr> <leader>e emmet#expandAbbrIntelligent("\<leader>e")
+" let g:user_emmet_expandabbr_key='<leader>e'
+" imap <expr> <leader>e emmet#expandAbbrIntelligent("\<leader>e")
+
 
 " Relative Numbers
 let g:NumberToggleTrigger="<F10>"
@@ -608,15 +633,27 @@ nnoremap )è <C-]>
 nnoremap è) <C-o>
 
 " UltiSnips
-let g:UltiSnipsExpandTrigger="<leader>u" 
-let g:UltiSnipsJumpForwardTrigger="<c-b>" 
-let g:UltiSnipsJumpBackwardTrigger="<c-z>" 
+let g:UltiSnipsExpandTrigger           = '<tab>'
+let g:UltiSnipsJumpForwardTrigger      = '<tab>'
+let g:UltiSnipsJumpBackwardTrigger     = '<S-tab>'
 
-"Vim Arpeggio
+" Vim Arpeggio
 call arpeggio#map('i', '', 0, 'bt', '<button class="btn btn-default" type="submit">Button</button>')
 call arpeggio#map('i', '', 0, 'jk', '<Esc>')
 call arpeggio#map('i', '', 0, 'jk', '<Esc>')
 call arpeggio#map('i', '', 0, 'jk', '<Esc>')
+
+" Vim Autoclose
+inoremap <leader>a <C-o>:AutoCloseToggle<CR>
+
+" Vundle
+nnoremap <leader>vi :PluginInstall<CR>
+
+" }}
+
+" }}}
+
+" Divers {{{
 
 " Restoring position when run a command in multiple buffers
 "——————————————————————————————————————————————————————————
@@ -649,6 +686,9 @@ function! WinDo(command)
 endfunction
 com! -nargs=+ -complete=command Windo call WinDo(<q-args>)
 
+" }}}
+
+" Autocommand {{{
 
 "---------------Auto-Commands---------------"
 
@@ -665,10 +705,16 @@ augroup autosourcing
 	autocmd BufWritePost .vimrc source %
 augroup end
 
-"autocmd VimEnter * :execute "normal i\<F8>\<Esc><Esc>\x"
+" autocmd VimEnter * :execute "normal i\<F8>\<Esc><Esc>\x"
 
 autocmd BufNewFile,BufRead *.vue set filetype=html
 
+" Folding
+au BufWritePost,BufLeave,WinLeave ?* mkview
+au BufReadPre ?* silent loadview
+" }}}
+
+" Abbreviations {{{
 
 	"---------------Abbreviations---------------"
 
@@ -692,22 +738,23 @@ autocmd BufNewFile,BufRead *.vue set filetype=html
 	:iab jqc$ $4''5.css4'', ''5;<C-R>=Eatchar4'\s'5<CR>
 	:iab box1 ╔════════════════════╗<CR>║        ║<CR>╚════════════════════╝<Up><Left><Left>
 
-	inoremap (( ()<Left>
-	inoremap )) ();<Left><Left>
-	inoremap (' ('')<Left><Left>
-	inoremap )' ('');<Left><Left><Left>
-	inoremap (" ("")<Left><Left>
-	inoremap )" ("");<Left><Left><Left>
-	inoremap [[ []<Left>
-	inoremap ]] [];<Left><Left>
-	inoremap [" [""]<Left><Left>
-	inoremap ]" [""];<Left><Left><Left>
+"	inoremap (( ()<Left>
+"	inoremap )) ();<Left><Left>
+"	inoremap (' ('')<Left><Left>
+"	inoremap )' ('');<Left><Left><Left>
+"	inoremap (" ("")<Left><Left>
+"	inoremap )" ("");<Left><Left><Left>
+"	inoremap [[ []<Left>
+"	inoremap ]] [];<Left><Left>
+"	inoremap [" [""]<Left><Left>
+"	inoremap ]" [""];<Left><Left><Left>
 	inoremap {{ {<CR><CR>}<Up>
-	inoremap '' ''<Left>
-	inoremap "" ""<Left>
+"	inoremap '' ''<Left>
+"	inoremap "" ""<Left>
 	inoremap b" =""<Left><C-R>=Eatchar('\s')<CR> 
 	inoremap "> "";<Left><Left><C-R>=Eatchar('\s')<CR>
 	inoremap ;; :<Space>;<Left><C-R>=Eatchar('\s')<CR>
 	inoremap == <Space>=<Space>;<Left><C-R>=Eatchar('\s')<CR>
 	inoremap ==" <Space>=<Space>"";<Left><Left><C-R>=Eatchar('\s')<CR>
 
+" }}}
