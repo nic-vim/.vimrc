@@ -179,6 +179,13 @@ let g:ctrlp_custom_ignore = 'node_modules\|git'
 let NERDTreeHijackNetrw = 0
 
 "/
+"/ Netrw
+"/
+" let g:netrw_browse_split=4
+let g:netrw_altv=1
+let g:netrw_liststyle=3
+
+"/
 "/ Lesscss
 "/
 " less to css executable (full path or simple executable)
@@ -308,7 +315,7 @@ noremap 6 @
 noremap + 7
 noremap 7 +
 noremap - 8
-noremap 8 -
+noremap 8 :Explore<CR> 
 noremap / 9
 noremap 9 /
 noremap * 0
@@ -424,11 +431,12 @@ noremap <leader>h :set hlsearch! hlsearch?<CR>
 nmap <leader>t <Esc>:tabnew<CR>
 " Afficher le nombre d'occurence d'une recherche
 map ,* *<C-o>:%s///gn<CR>n
-nnoremap <leader>. :cd %:h<cr>
+nnoremap <leader>. :lcd %:h<cr>
 nnoremap <leader>d "_d
 nnoremap <leader>q :q!<cr>
 nnoremap <leader>z :wq!<cr>
 nnoremap <leader>za :wqa!<cr>
+nnoremap <leader>fp :put =expand('%:p')<CR>
 " }}}
 
 " Raccourcis déplacements en mode insertion {{{
@@ -524,8 +532,6 @@ noremap! ß !
 " ê 
 noremap <Esc>ê (
 noremap! <Esc>ê (
-" cariage return en mode insertion
-inoremap <Esc>à <C-o>o 
 " a
 "noremap <Esc>a [
 "noremap! <Esc>a [
@@ -555,8 +561,6 @@ nnoremap <Space>o :tabnew<CR>:Explore<CR>
 nnoremap <Space>n :NERDTreeToggle<CR>
 
 " Copier/Coller/Supprimer/Insérer
-noremap à $
-noremap ê ^
 onoremap é iw
 onoremap u iW
 nnoremap l* v$<Left><Left>c
@@ -587,11 +591,16 @@ inoremap <leader>o <C-x><C-o>
 " Divers
 cmap ç !
 inoremap éé <C-o>
-
+inoremap é$ <C-o>$
+inoremap é" <C-o>_
 nnoremap èo A<CR><Esc>
 inoremap èo <C-o>$<CR>
 
-nnoremap <leader>fp :put =expand('%:p')<CR>
+nnoremap ê [
+nnoremap Ê <C-[>
+nnoremap à ]
+nnoremap À <C-]>
+
 nnoremap g, g;
 
 inoremap j= <C-o>==
@@ -599,7 +608,7 @@ inoremap j= <C-o>==
 inoremap x<space> <C-o>$<space>
 
 
-" Mapping Plugins {{
+" Mapping Plugins {{{
 " ———————————————
 
 " Vim Bookmarks
@@ -649,7 +658,10 @@ inoremap <leader>a <C-o>:AutoCloseToggle<CR>
 " Vundle
 nnoremap <leader>vi :PluginInstall<CR>
 
-" }}
+" Netrw
+" nmap - :Explore<CR>
+
+" }}}
 
 " }}}
 
@@ -711,7 +723,7 @@ autocmd BufNewFile,BufRead *.vue set filetype=html
 
 " Folding
 au BufWritePost,BufLeave,WinLeave ?* mkview
-au BufReadPre ?* silent loadview
+au BufEnter ?* silent loadview
 " }}}
 
 " Abbreviations {{{
