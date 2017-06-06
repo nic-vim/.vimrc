@@ -37,7 +37,7 @@ Bundle 'vitalk/vim-lesscss'
 " Vim Bookmarks
 Plugin 'MattesGroeger/vim-bookmarks'
 " Indent Line
-Plugin 'Yggdroot/indentLine'
+"Plugin 'Yggdroot/indentLine'
 " Relative Numbers 
 Bundle "jeffkreeftmeijer/vim-numbertoggle"
 " Vim Airline
@@ -57,10 +57,10 @@ Plugin 'SirVer/ultisnips'
 Plugin 'honza/vim-snippets' 
 " Vim Arpeggio
 Plugin 'kana/vim-arpeggio'
-" Matchem
-"Plugin 'ervandew/matchem'
 " DelimitMate
 Plugin 'Raimondi/delimitMate'
+" Syntastic
+Plugin 'vim-syntastic/syntastic'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -125,6 +125,8 @@ set complete=.,w,b,u,t,i,kspell    " options de l'auto completion
 
 " Menu de sélection qui s'affiche au dessus de la ligne de status
 set wildmenu
+
+set autowrite
 
 "SWAGG
 "set relativenumber                           " setting line numbers
@@ -221,8 +223,15 @@ let g:conoline_auto_enable = 0
 
 " Mapping {{{
 
-"---------------Mappings Divers---------------"
-"—————————————————————————————————————————————"
+" mapping de tous les caractères de a à z avec Alt
+let c='a'
+while c <= 'z'
+  exec "map \e".c." <M-".c.">"
+  exec "map! \e".c." <M-".c.">"
+  let c = nr2char(1+char2nr(c))
+endw
+
+" Déplacements"{{{
 
 " {W} -> [É]
 " ——————————
@@ -251,9 +260,9 @@ nnoremap q gj
 vnoremap q gj
 nnoremap s gk
 vnoremap s gk
-" {CR} = « haut / bas de l'écran »
-noremap T H
-noremap R L
+" {TR} = « début / fin de ligne »
+noremap T ^
+noremap R $
 " {TS} = « joindre / aide »
 noremap Q J
 noremap S K
@@ -280,7 +289,31 @@ noremap K S
 noremap ]k ]s
 noremap [k [s
 
-" Désambiguation de {g}
+" Déplacement au dernier endroit modifié
+nnoremap g, g;
+"}}}
+" Raccourcis déplacements en mode insertion {{{
+" —————————————————————————————————————————
+
+imap <A-s> <Up>
+imap <A-q> <Down>
+imap <A-t> <Left>
+imap <A-r> <Right>
+
+cmap <A-s> <Up>
+cmap <A-q> <Down>
+cmap <A-t> <Left>
+cmap <A-r> <Right>
+
+imap II <Esc>I
+imap AA <Esc>A
+imap OO <Esc>O
+imap LL <Esc>L
+imap DD <C-o>dd
+imap UU <C-o>u
+
+" }}}
+" Désambiguation de {g}"{{{
 " —————————————————————
 " ligne écran précédente / suivante (à l'intérieur d'une phrase)
 noremap gs gk
@@ -295,10 +328,8 @@ noremap gÉ :exe "silent! tablast"<CR>
 noremap g" g0
 
 " Redéfinition de la lettre q
-nnoremap ç q
-
-
-" Chiffres en accès direct
+nnoremap ç q"}}}
+" Chiffres en accès direct "{{{
 " ————————————————————————
 noremap " 1
 noremap 1 "
@@ -363,11 +394,8 @@ noremap! 9 /
 noremap! * 0
 noremap! 0 *
 
-" Activer/Désactiver le mode langue lmap
-:map! <F8> <C-^> 
-
-
-" Rangée de touches fonctions
+" }}}
+" Touches fonctions"{{{
 " ———————————————————————————
 "
 " Activer ou désactiver le mode Paste avec <F2> pour coller du texte sans formatage
@@ -376,7 +404,7 @@ set pastetoggle=<F2>
 set showmode
 
 " Coller le registre "*
-nnoremap <F3> "0p
+nnoremap <F3> "*yy
 set <S-F3>=[1;2R
 nnoremap <S-F3> "*p
 
@@ -395,36 +423,25 @@ inoremap <S-F5> <C-o>:vertical resize -1<CR>
 inoremap <S-F6> <C-o>:vertical resize +1<CR>
 
 " Ouvrir le buffer numéro n
-nnoremap <F7> :buffers<CR>:buffer<Space>
-
-
-" mapping de tous les caractères de a à z avec Alt
-let c='a'
-while c <= 'z'
-	exec "map \e".c." <M-".c.">"
-	exec "map! \e".c." <M-".c.">"
-	let c = nr2char(1+char2nr(c))
-endw
-
-" Quitter le mode insertion
-:imap qs <ESC>
-:vmap qs <ESC>
-
+nnoremap <F7> :buffers<CR>:buffer<Space>"}}}
+" Recherche et remplacement"{{{
+nnoremap <Char-32> /
+nnoremap <Char-160> ?
+"}}}
 " Raccourcis touche <leader> , {{{
+
 " ————————————————————————————
 "
 " Enregistrement
 nnoremap <leader>w <Esc>:wa<CR>
 " coller le registre "* avec p
-inoremap <leader>p <C-o>"*p
-nnoremap <leader>p "*p
+noremap <leader>pé "+yy
+nnoremap <leader>po "+p
 " indentation automatique de l'ensemble du document
-nmap <leader>b ggv<S-g>=''zz
-imap <leader>b <Esc>ggv<S-g>=''zzi
+nmap <leader>b ggvG=''zz
+imap <leader>b <Esc>ggvG=''zzi
 " Éditer le fichier .vimrc
 nmap <leader>ev :tabe $MYVIMRC<CR>
-" Buffer suivant
-nnoremap <leader><Tab> :bnext<CR>
 " activer/désactiver le surlignage des recherches
 noremap <leader>h :set hlsearch! hlsearch?<CR>
 " Ouvrir un nouvel onglet
@@ -436,32 +453,11 @@ nnoremap <leader>d "_d
 nnoremap <leader>q :q!<cr>
 nnoremap <leader>z :wq!<cr>
 nnoremap <leader>za :wqa!<cr>
+" Insertion du chemin complet et du nom du fichier
 nnoremap <leader>fp :put =expand('%:p')<CR>
+nnoremap <leader>ff "%p
 " }}}
-
-" Raccourcis déplacements en mode insertion {{{
-" —————————————————————————————————————————
-
-imap <A-s> <Up>
-imap <A-q> <Down>
-imap <A-t> <Left>
-imap <A-r> <Right>
-
-cmap <A-s> <Up>
-cmap <A-q> <Down>
-cmap <A-t> <Left>
-cmap <A-r> <Right>
-
-imap II <Esc>I
-imap AA <Esc>A
-imap OO <Esc>O
-imap LL <Esc>L
-imap DD <Esc>dd
-imap UU <Esc>ui
-
-" }}}
-
-" Backspace avec Alt ' et Del avec Alt k
+" Backspace avec Alt ' et Del avec Alt k"{{{
 function! BS_key(...)
 
   let column = col(".")
@@ -469,18 +465,18 @@ function! BS_key(...)
 
   execute "normal i\<BS>\<ESC>"
 
-    if column == 1
-      let column2 = col (".")
-      if column2 > 1
-				echo column
-          execute "normal r"
-      endif
-    else
-      if column > 1
-				echo column
-        execute "normal r" 
-      endif
+  if column == 1
+    let column2 = col (".")
+    if column2 > 1
+      echo column
+      execute "normal r"
     endif
+  else
+    if column > 1
+      echo column
+      execute "normal r" 
+    endif
+  endif
 
 endfunction       
 
@@ -489,27 +485,33 @@ nmap <Esc><Char-39> <BS>
 imap <Esc><Char-39> <BS>
 cmap <Esc><Char-39> <BS>
 inoremap <A-k> <Del>
-cnoremap <A-k> <Del>
-
-" Retour chariot
-nnoremap <A-v> i<CR><Esc>
-inoremap <A-v> <CR>
-cnoremap <A-v> <CR>
-
-" Déplacement de lignes ou de bloc
+cnoremap <A-k> <Del>"}}}
+" Déplacement de lignes ou de bloc"{{{
 noremap <silent> <A-Down> :m .+1<CR>==
 noremap <silent> <A-Up> :m .-2<CR>==
 inoremap <A-Down> <Esc>:m .+1<CR>==gi
 inoremap <A-Up> <Esc>:m .-2<CR>==gi
 vnoremap <A-Down> :m '>+1<CR>gv=gv
 vnoremap <A-Up> :m '<-2<CR>gv=gv
-
-" Raccourcis onglets
+"}}}
+" Raccourcis onglets"{{{
 nnoremap <silent> <A-Left> :execute 'silent! tabmove ' . (tabpagenr()-2)<CR>
 nnoremap <silent> <A-Right> :execute 'silent! tabmove ' . (tabpagenr()+1)<CR>
 nnoremap gr :tabprevious<CR>
-
-" ALT GR
+"}}}
+" Auto Center"{{{
+nmap G Gzz
+nmap n nzz
+nmap N Nzz
+nmap } }zz
+nmap { {zz
+"}}}
+" Retour chariot"{{{
+nnoremap <A-v> i<CR><Esc>
+inoremap <A-v> <CR>
+cnoremap <A-v> <CR>
+"}}}
+" ALT GR"{{{
 " ——————
 " Z 
 noremap ə @
@@ -525,49 +527,53 @@ noremap † -
 noremap! † -
 " S
 noremap ß !
-noremap! ß !
-
-" ALT
+noremap! ß !"}}}
+" ALT"{{{
 " ———
 " ê 
 noremap <Esc>ê (
 noremap! <Esc>ê (
-" a
-"noremap <Esc>a [
-"noremap! <Esc>a [
-" u
-"noremap <Esc>u ]
-"noremap! <Esc>u ]
-" é
 noremap <Esc>é :
 noremap! <Esc>é :
-
-
-" SHIFT
+"}}}
+" SHIFT"{{{
 " —————
-
-" Espace
+"}}}
+" Espace"{{{
 " ——————
 "
 " Espace
-nnoremap <Char-32> <C-d>
+"nnoremap <Char-32> <C-d>
 " Shift
-nnoremap <Char-160> <C-u>
+"nnoremap <Char-160> <C-u>
 " y
 nnoremap <Space>y "+yy
 " o
 nnoremap <Space>o :tabnew<CR>:Explore<CR>
 " n
 nnoremap <Space>n :NERDTreeToggle<CR>
+"}}}
+" Édition"{{{
+" Quitter le mode insertion
+:imap qs <ESC>
+:vmap qs <ESC>
 
-" Copier/Coller/Supprimer/Insérer
 onoremap é iw
 onoremap u iW
 nnoremap l* v$<Left><Left>c
 omap j h
 omap z f
-
-" Mise en forme
+inoremap éé <C-o>
+inoremap é$ <C-o>$
+inoremap é" <C-o>_
+nnoremap èo A<CR><Esc>
+inoremap èo <C-o>$<CR>
+"}}}
+" Sélection"{{{
+vmap > >gv
+vmap < <gv
+"}}}
+" Mise en forme box"{{{
 " —————————————
 inoremap <Esc>l ═
 inoremap <Esc>j ║
@@ -580,38 +586,38 @@ inoremap <Esc>ç ╠
 inoremap <Esc>g ╦
 inoremap <Esc>h ╩
 inoremap <Esc>f ╬
-
-" Autocompletion
+"}}}
+" Autocompletion"{{{
 inoremap èèn <C-x><C-n>
 inoremap èèf <C-x><C-f>
 inoremap <leader>f <C-x><C-f>
 inoremap <leader>n <C-x><C-n>
 inoremap <leader>o <C-x><C-o>
+"}}}
+" Divers"{{{
+" Activer/Désactiver le mode langue lmap
+:map! <F8> <C-^> 
 
-" Divers
 cmap ç !
-inoremap éé <C-o>
-inoremap é$ <C-o>$
-inoremap é" <C-o>_
-nnoremap èo A<CR><Esc>
-inoremap èo <C-o>$<CR>
-
+" [ et ]
 nnoremap ê [
 nnoremap Ê <C-[>
 nnoremap à ]
 nnoremap À <C-]>
-
-nnoremap g, g;
-
+"
 inoremap j= <C-o>==
-
-inoremap x<space> <C-o>$<space>
-
-
+nnoremap Q @q
+inoremap x<space> <C-o>$<space>"}}}
+" Buffers"{{{
+nnoremap <leader>bd :bd<CR>
+nnoremap <leader>bn :bn<CR>
+nnoremap <leader>bp :bp<CR>
+nnoremap <leader><Tab> :bnext<CR>
+"}}}
 " Mapping Plugins {{{
 " ———————————————
 
-" Vim Bookmarks
+" Vim Bookmarks"{{{
 "nmap <Leader><Leader> <Plug>BookmarkToggle
 "nmap <Leader>i <Plug>BookmarkAnnotate
 nmap mf <Plug>BookmarkShowAll
@@ -621,15 +627,29 @@ nmap mj <Plug>BookmarkClear
 nmap ma <Plug>BookmarkClearAll
 nmap mss <Plug>BookmarkMoveUp
 nmap mtt <Plug>BookmarkMoveDown
+"}}}
 
 " CtrlP
 let g:ctrlp_map = '<c-p>'
 let g:ctrlp_cmd = 'CtrlP'
 
-" emmet
-" let g:user_emmet_expandabbr_key='<leader>e'
-" imap <expr> <leader>e emmet#expandAbbrIntelligent("\<leader>e")
-
+" emmet "{{{
+imap   .e   <plug>(emmet-expand-abbr)
+imap   <C-y>;   <plug>(emmet-expand-word)
+imap   <C-y>u   <plug>(emmet-update-tag)
+imap   <C-y>d   <plug>(emmet-balance-tag-inward)
+imap   <C-y>D   <plug>(emmet-balance-tag-outward)
+imap   <C-y>n   <plug>(emmet-move-next)
+imap   <C-y>N   <plug>(emmet-move-prev)
+imap   <C-y>i   <plug>(emmet-image-size)
+imap   <C-y>/   <plug>(emmet-toggle-comment)
+imap   <C-y>j   <plug>(emmet-split-join-tag)
+imap   <C-y>k   <plug>(emmet-remove-tag)
+imap   <C-y>a   <plug>(emmet-anchorize-url)
+imap   <C-y>A   <plug>(emmet-anchorize-summary)
+imap   <C-y>m   <plug>(emmet-merge-lines)
+imap   <C-y>c   <plug>(emmet-code-pretty)
+"}}}
 
 " Relative Numbers
 let g:NumberToggleTrigger="<F10>"
@@ -646,11 +666,12 @@ let g:UltiSnipsExpandTrigger           = '<tab>'
 let g:UltiSnipsJumpForwardTrigger      = '<tab>'
 let g:UltiSnipsJumpBackwardTrigger     = '<S-tab>'
 
-" Vim Arpeggio
+" Vim Arpeggio "{{{
 call arpeggio#map('i', '', 0, 'bt', '<button class="btn btn-default" type="submit">Button</button>')
 call arpeggio#map('i', '', 0, 'jk', '<Esc>')
 call arpeggio#map('i', '', 0, 'jk', '<Esc>')
 call arpeggio#map('i', '', 0, 'jk', '<Esc>')
+"}}}
 
 " Vim Autoclose
 inoremap <leader>a <C-o>:AutoCloseToggle<CR>
@@ -659,10 +680,8 @@ inoremap <leader>a <C-o>:AutoCloseToggle<CR>
 nnoremap <leader>vi :PluginInstall<CR>
 
 " Netrw
-" nmap - :Explore<CR>
 
 " }}}
-
 " }}}
 
 " Divers {{{
@@ -717,8 +736,6 @@ augroup autosourcing
 	autocmd BufWritePost .vimrc source %
 augroup end
 
-" autocmd VimEnter * :execute "normal i\<F8>\<Esc><Esc>\x"
-
 autocmd BufNewFile,BufRead *.vue set filetype=html
 
 " Folding
@@ -750,19 +767,19 @@ au BufEnter ?* silent loadview
 	:iab jqc$ $4''5.css4'', ''5;<C-R>=Eatchar4'\s'5<CR>
 	:iab box1 ╔════════════════════╗<CR>║        ║<CR>╚════════════════════╝<Up><Left><Left>
 
-"	inoremap (( ()<Left>
+	inoremap (( ()<Left>
 "	inoremap )) ();<Left><Left>
-"	inoremap (' ('')<Left><Left>
+	inoremap (' ('')<Left><Left>
 "	inoremap )' ('');<Left><Left><Left>
-"	inoremap (" ("")<Left><Left>
+	inoremap (" ("")<Left><Left>
 "	inoremap )" ("");<Left><Left><Left>
 "	inoremap [[ []<Left>
 "	inoremap ]] [];<Left><Left>
-"	inoremap [" [""]<Left><Left>
+	inoremap [" [""]<Left><Left>
 "	inoremap ]" [""];<Left><Left><Left>
 	inoremap {{ {<CR><CR>}<Up>
 "	inoremap '' ''<Left>
-"	inoremap "" ""<Left>
+	inoremap "" ""<Left>
 	inoremap b" =""<Left><C-R>=Eatchar('\s')<CR> 
 	inoremap "> "";<Left><Left><C-R>=Eatchar('\s')<CR>
 	inoremap ;; :<Space>;<Left><C-R>=Eatchar('\s')<CR>
