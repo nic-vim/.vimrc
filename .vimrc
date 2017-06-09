@@ -240,6 +240,12 @@ noremap é w
 noremap É W
 onoremap é w
 onoremap É W
+
+" Saut en fin de mot
+nnoremap B ge
+nnoremap É e
+onoremap é iw
+onoremap u iW
 " Corollaire: on remplace les text objects aw, aW, iw et iW
 " pour effacer/remplacer un mot quand on n’est pas au début (daé / laé).
 onoremap aé aw
@@ -395,6 +401,24 @@ noremap! * 0
 noremap! 0 *
 
 " }}}
+" Édition"{{{
+" Quitter le mode insertion
+:imap qs <ESC>
+:vmap qs <ESC>
+" Yank du curseur jusqu'à la fin de la ligne
+nnoremap Y y$
+" Inverser deux mots
+nnoremap <leader>i dawe<right>p
+
+nnoremap l* v$<Left><Left>c
+omap j h
+omap z f
+inoremap éé <C-o>
+inoremap é$ <C-o>$
+inoremap é" <C-o>_
+nnoremap èo A<CR><Esc>
+inoremap èo <C-o>$<CR>
+"}}}
 " Touches fonctions"{{{
 " ———————————————————————————
 "
@@ -553,22 +577,6 @@ nnoremap <Space>o :tabnew<CR>:Explore<CR>
 " n
 nnoremap <Space>n :NERDTreeToggle<CR>
 "}}}
-" Édition"{{{
-" Quitter le mode insertion
-:imap qs <ESC>
-:vmap qs <ESC>
-
-onoremap é iw
-onoremap u iW
-nnoremap l* v$<Left><Left>c
-omap j h
-omap z f
-inoremap éé <C-o>
-inoremap é$ <C-o>$
-inoremap é" <C-o>_
-nnoremap èo A<CR><Esc>
-inoremap èo <C-o>$<CR>
-"}}}
 " Sélection"{{{
 vmap > >gv
 vmap < <gv
@@ -667,6 +675,7 @@ let g:UltiSnipsJumpForwardTrigger      = '<tab>'
 let g:UltiSnipsJumpBackwardTrigger     = '<S-tab>'
 
 " Vim Arpeggio "{{{
+call arpeggio#map('i', '', 0, 'CDN', '<Esc>:r !grep ~/.vim/templates/CDN')
 call arpeggio#map('i', '', 0, 'bt', '<button class="btn btn-default" type="submit">Button</button>')
 call arpeggio#map('i', '', 0, 'jk', '<Esc>')
 call arpeggio#map('i', '', 0, 'jk', '<Esc>')
@@ -741,6 +750,12 @@ autocmd BufNewFile,BufRead *.vue set filetype=html
 " Folding
 au BufWritePost,BufLeave,WinLeave ?* mkview
 au BufEnter ?* silent loadview
+
+" Fix the filetype for .md files.
+"augroup MarkDownType
+"    autocmd!
+"    autocmd BufNewFile,BufRead *.md setlocal filetype=markdown
+"augroup end
 " }}}
 
 " Abbreviations {{{
@@ -768,17 +783,17 @@ au BufEnter ?* silent loadview
 	:iab box1 ╔════════════════════╗<CR>║        ║<CR>╚════════════════════╝<Up><Left><Left>
 
 	inoremap (( ()<Left>
-"	inoremap )) ();<Left><Left>
+	inoremap )) ();<Left><Left>
 	inoremap (' ('')<Left><Left>
-"	inoremap )' ('');<Left><Left><Left>
+	inoremap )' ('');<Left><Left><Left>
 	inoremap (" ("")<Left><Left>
-"	inoremap )" ("");<Left><Left><Left>
-"	inoremap [[ []<Left>
-"	inoremap ]] [];<Left><Left>
+	inoremap )" ("");<Left><Left><Left>
+	inoremap [[ []<Left>
+	inoremap ]] [];<Left><Left>
 	inoremap [" [""]<Left><Left>
-"	inoremap ]" [""];<Left><Left><Left>
+	inoremap ]" [""];<Left><Left><Left>
 	inoremap {{ {<CR><CR>}<Up>
-"	inoremap '' ''<Left>
+	inoremap '' ''<Left>
 	inoremap "" ""<Left>
 	inoremap b" =""<Left><C-R>=Eatchar('\s')<CR> 
 	inoremap "> "";<Left><Left><C-R>=Eatchar('\s')<CR>
