@@ -57,10 +57,10 @@ Plugin 'SirVer/ultisnips'
 Plugin 'honza/vim-snippets' 
 " Vim Arpeggio
 Plugin 'kana/vim-arpeggio'
-" DelimitMate
-Plugin 'Raimondi/delimitMate'
 " Syntastic
 Plugin 'vim-syntastic/syntastic'
+" YouCompleteMe
+Plugin 'Valloric/YouCompleteMe'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -333,8 +333,7 @@ noremap gÉ :exe "silent! tablast"<CR>
 " optionnel : {g"} pour aller au début de la ligne écran
 noremap g" g0
 
-" Redéfinition de la lettre q
-nnoremap ç q"}}}
+"}}}
 " Chiffres en accès direct "{{{
 " ————————————————————————
 noremap " 1
@@ -447,7 +446,8 @@ inoremap <S-F5> <C-o>:vertical resize -1<CR>
 inoremap <S-F6> <C-o>:vertical resize +1<CR>
 
 " Ouvrir le buffer numéro n
-nnoremap <F7> :buffers<CR>:buffer<Space>"}}}
+nnoremap <F7> :buffers<CR>:buffer<Space>
+"}}}
 " Recherche et remplacement"{{{
 nnoremap <Char-32> /
 nnoremap <Char-160> ?
@@ -606,7 +606,10 @@ inoremap <leader>o <C-x><C-o>
 " Activer/Désactiver le mode langue lmap
 :map! <F8> <C-^> 
 
-cmap ç !
+" Redéfinition de la lettre q
+nnoremap ç q
+nnoremap Q @q
+
 " [ et ]
 nnoremap ê [
 nnoremap Ê <C-[>
@@ -614,8 +617,8 @@ nnoremap à ]
 nnoremap À <C-]>
 "
 inoremap j= <C-o>==
-nnoremap Q @q
-inoremap x<space> <C-o>$<space>"}}}
+inoremap x<space> <C-o>$<space>
+"}}}
 " Buffers"{{{
 nnoremap <leader>bd :bd<CR>
 nnoremap <leader>bn :bn<CR>
@@ -657,6 +660,8 @@ imap   <C-y>a   <plug>(emmet-anchorize-url)
 imap   <C-y>A   <plug>(emmet-anchorize-summary)
 imap   <C-y>m   <plug>(emmet-merge-lines)
 imap   <C-y>c   <plug>(emmet-code-pretty)
+
+imap .x <CR><CR><CR><CR><Up><Up>
 "}}}
 
 " Relative Numbers
@@ -739,13 +744,13 @@ com! -nargs=+ -complete=command Windo call WinDo(<q-args>)
 " Close vim if the  only window  left open is a NERDTree
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
 
-" Automatically source the Vimrc filave
+" Automatically source the Vimrc file
 augroup autosourcing
 	autocmd!
 	autocmd BufWritePost .vimrc source %
 augroup end
 
-autocmd BufNewFile,BufRead *.vue set filetype=html
+autocmd BufNewFile,BufRead *.vue set filetype=html.vue
 
 " Folding
 au BufWritePost,BufLeave,WinLeave ?* mkview
@@ -768,37 +773,27 @@ au BufEnter ?* silent loadview
 		return (c =~ a:pat) ? '' : c
 	endfunc
 
-	:iab <silent> if if 45<Left><C-R>=Eatchar4'\s'5<CR>
-	:iab cl$ console.log45;<Left><Left><C-R>=Eatchar4'\s'5<CR>
-	:iab el$ else<CR>{<CR><CR>}<C-o>2k<C-R>=Eatchar4'\s'5<CR>
-	:iab for$ for 4i = *; i 2 ; i775<CR>{<CR><CR>}<Up><C-R>=Eatchar4'\s'5<CR>
-	:iab sw$ switch45<cr>{<CR>case : <CR>break;<CR><CR>case : <CR>break;<CR>}
-	:iab fu$ function 45 {<CR><CR>}<Up><Up><C-R>=Eatchar4'\s'5<CR>
-	:iab (f$ 4'', function 45 {<CR>}5;<Up><Left><C-R>=Eatchar4'\s'5<CR>
-	:iab fa$ 4function 45 {<CR><CR>}545;<Up><Left><C-R>=Eatchar4'\s'5<CR>
-	" jQuery
-	:iab jf('$ $4''5.4'', function45<CR>{<CR><CR>}5;<C-R>=Eatchar4'\s'5<CR>
-	:iab jqon$ $4''5.on4'', function45{<CR><CR>}5;<C-R>=Eatchar4'\s'5<CR>
-	:iab jqc$ $4''5.css4'', ''5;<C-R>=Eatchar4'\s'5<CR>
 	:iab box1 ╔════════════════════╗<CR>║        ║<CR>╚════════════════════╝<Up><Left><Left>
 
-	inoremap (( ()<Left>
-	inoremap )) ();<Left><Left>
-	inoremap (' ('')<Left><Left>
-	inoremap )' ('');<Left><Left><Left>
-	inoremap (" ("")<Left><Left>
-	inoremap )" ("");<Left><Left><Left>
-	inoremap [[ []<Left>
-	inoremap ]] [];<Left><Left>
+	inoremap 4 ()<Left>
+	inoremap 44 ();<Left><Left>
+  inoremap ' ''<Left>
+	inoremap '' ('')<Left><Left>
+	inoremap ''' ('');<Left><Left><Left>
+  inoremap 1 ""<Left>
+	inoremap 11 ("")<Left><Left>
+	inoremap 111 ("");<Left><Left><Left>
+	inoremap [ []<Left>
+	inoremap [[ [];<Left><Left>
 	inoremap [" [""]<Left><Left>
 	inoremap ]" [""];<Left><Left><Left>
+	inoremap { {}<Left>
 	inoremap {{ {<CR><CR>}<Up>
-	inoremap '' ''<Left>
-	inoremap "" ""<Left>
 	inoremap b" =""<Left><C-R>=Eatchar('\s')<CR> 
 	inoremap "> "";<Left><Left><C-R>=Eatchar('\s')<CR>
 	inoremap ;; :<Space>;<Left><C-R>=Eatchar('\s')<CR>
 	inoremap == <Space>=<Space>;<Left><C-R>=Eatchar('\s')<CR>
 	inoremap ==" <Space>=<Space>"";<Left><Left><C-R>=Eatchar('\s')<CR>
 
+  inoremap <leader>mh {{<space><space><space>}}<C-o>F{<Right><Right>
 " }}}
